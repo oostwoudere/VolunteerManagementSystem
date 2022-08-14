@@ -248,61 +248,62 @@ let PSA = {
          * Add Init Functions Per Page/Form
          */
         init: {
-            add: function () {
+            add: function (postData) {
                 // Make Sure Validation Is Reset
                 PSA.Volunteer.resetValidation();
                 // Add Center Functionality to Centers Area
                 $('select[name="centersList"]').on('change', () => { PSA.Volunteer.addCenter(); });
-                // Add Submit Action
-                $('#SubmitAddVolunteer').on('click', () => { PSA.Volunteer.add(); });
+                // Display Any Current Center Selection
+                let arr = $('input[name="centers"]').val().split(',');
+                if(arr.length > 0) {
+                    arr.filter(n => n).forEach(c => {
+                        let centerName = $(`select[name='centersList'] option[value=${c}]`).html();
+                        PSA.Volunteer.amendCenter(c, centerName.substr(0, centerName.indexOf(' - ')));
+                    });
+                }
+
+                // Check and Add Post Data
+                if(postData) {
+                    if(postData['Success']) {
+                        PSA.Helpers.Swal.Redirect.success('Volunteer Creation Succeeded', window.location.origin + '/dashboard/volunteers');
+                    } else if(!postData['valid']) {
+                        // Generate Validation Information
+                        postData['errorsData'].forEach(({id, data}) => $(`#${id}_validation`).html(data).show());
+                    } else {
+                        // Note And Alert User of Error(s)
+                        PSA.Debug.add('Volunteer Creation Failed', 'Volunteer Init Add', postData);
+                        PSA.Helpers.Swal.error('Volunteer Creation Failed at DB');
+                    }
+                }
             },
-        },
+            edit: function (postData) {
+                // Make Sure Validation Is Reset
+                PSA.Volunteer.resetValidation();
+                // Add Center Functionality to Centers Area
+                $('select[name="centersList"]').on('change', () => { PSA.Volunteer.addCenter(); });
+                // Display Any Current Center Selection
+                let arr = $('input[name="centers"]').val().split(',');
+                if(arr.length > 0) {
+                    arr.filter(n => n).forEach(c => {
+                        let centerName = $(`select[name='centersList'] option[value=${c}]`).html();
+                        PSA.Volunteer.amendCenter(c, centerName.substr(0, centerName.indexOf(' - ')));
+                    });
+                }
 
-        /**
-         * Submit Add Volunteer Form
-         */
-        add: function () {
-            // Step 1: Reset Validation
-            PSA.Volunteer.resetValidation();
-
-            // Step 2: Get Data
-            // Create Data Object for storage
-            let data = {};
-            // Dynamically Add Data to Storage Variable
-            $.each(PSA.Volunteer.properties, (key, value) => data[value.name] = $(`${value.type}[name="${value.name}"]`).val());
-            /* TODO: Fix Uploads
-            // Fix Upload Data
-            let data = new FormData(document.querySelector('form'));
-            if($('input[name="drivers"]').val() !== '') {
-                console.log('update Drivers');
-                // data['drivers'] = new FormData();
-                data.append('drivers', drivers.files[0]);
-            }
-            if($('input[name="social"]').val() !== '') {
-                console.log('update Social');
-                // data['social'] = new FormData();
-                data.append('drivers', social.files[0]);
-            }
-            */
-
-            console.log(JSON.stringify(data));
-
-            // Step 3: Setup Actions
-            // Validation Action
-            let validateAction = (errs) => {
-                if(typeof errs === 'string') data = JSON.parse(errs);
-                console.log('Validation Data: ' + JSON.stringify(errs));
-                errs.forEach(({id, data}) => $(`#${id}_validation`).html(data).show());
-            };
-            // Success Action
-            let successAction = (info) => {
-                console.log(JSON.stringify(info));
-                PSA.Helpers.Swal.success('Volunteer Creation Succeeded');
-                // TODO: Add Redirect
-            };
-
-            // Step 4: Submit Form
-            PSA.Helpers.ajax('AddVolunteer', data, successAction, 'Volunteer Creation', true, false, true, validateAction);
+                // Check and Add Post Data
+                if(postData) {
+                    if(postData['Success']) {
+                        PSA.Helpers.Swal.Redirect.success('Volunteer Modification Succeeded', window.location.origin + '/dashboard/volunteers');
+                    } else if(!postData['valid']) {
+                        // Generate Validation Information
+                        postData['errorsData'].forEach(({id, data}) => $(`#${id}_validation`).html(data).show());
+                    } else {
+                        // Note And Alert User of Error(s)
+                        PSA.Debug.add('Volunteer Modification Failed', 'Volunteer Init Modification', postData);
+                        PSA.Helpers.Swal.error('Volunteer Modification Failed at DB');
+                    }
+                }
+            },
         },
 
         resetValidation() {
@@ -324,14 +325,23 @@ let PSA = {
                 // Step 3: Display Selection
                 let centerName = $(`select[name='centersList'] option[value=${center}]`).html();
                 centerName = centerName.substr(0, centerName.indexOf(' - '));
-                $('#selectedCenters').append(`<span id="centerSelected${center}" class="badge rounded-pill text-bg-secondary">
-                                            ${centerName} <span title="Remove" class="c-pointer" onclick="PSA.Volunteer.removeCenter(${center})">X</span>
-                                        </span>`)
+                PSA.Volunteer.amendCenter(center, centerName);
 
                 // Step 4: Reset Select
                 $(`select[name="centersList"] option[value="${center}"]`).hide()
                 $('select[name="centersList"] option:first').prop('selected', true);
             }
+        },
+
+        /**
+         * Amends Center to Visual Centers
+         * @param id    {Number}    ID of the Center
+         * @param name  {string}    Name of the Center
+         */
+        amendCenter: function (id, name) {
+            $('#selectedCenters').append(`<span id="centerSelected${id}" class="badge rounded-pill text-bg-secondary">
+                                            ${name} <span title="Remove" class="c-pointer" onclick="PSA.Volunteer.removeCenter(${id})">X</span>
+                                        </span>`);
         },
 
         /**

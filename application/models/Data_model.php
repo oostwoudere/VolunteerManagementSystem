@@ -1,4 +1,6 @@
-<?php defined('BASEPATH') OR exit('No direct script access allowed');
+<?php use JetBrains\PhpStorm\ArrayShape;
+
+defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * @property Ion_auth|Ion_auth_model    $ion_auth       The ION Auth spark
@@ -45,8 +47,10 @@ class Data_model extends CI_Model {
      * @return array Volunteer Data Query Result
      */
     public function LoadVolunteer(int|bool $id = false) : array {
-        $query = $this->db->where('user_id', $id ?? $this->ion_auth->get_user_id())->get($this::TABLES['Volunteers']);
-        return $query->result_array();
+        $query = $this->db->select('users.*, volunteers_data.*')
+                        ->join($this::TABLES['Users'], 'users.id = '.$this::TABLES['Volunteers'].'.user_id')
+                        ->where($this::TABLES['Volunteers'].'.user_id', $id ?? $this->ion_auth->get_user_id())->get($this::TABLES['Volunteers']);
+        return $query->result_array()[0];
     }
 
     /** Load Volunteer That Can be Added to an Opportunity
@@ -99,6 +103,7 @@ class Data_model extends CI_Model {
 
         return $q->result_array();
     }
+
     //------ Add -------
     /** Add to Table
      *
@@ -141,7 +146,6 @@ class Data_model extends CI_Model {
             return false;
         }
     }
-
 
     //----- Delete -----
     /** Delete a Table Entry
@@ -191,7 +195,7 @@ class Data_model extends CI_Model {
      * @param int $user_id      User ID or 0 for Current User ID | Default: 0
      */
     public function AuditAction(string $action, string $data, bool $success = false, string $location = 'Data', int $user_id = 0) : void {
-        $msg = ($success) ? " Failed!" : " Succeeded!";
+        $msg = ($success) ? " Succeeded!" : " Failed!";
         $this->Audit_model->LogItem(
             array(
                 'location'  => $location,
@@ -202,7 +206,6 @@ class Data_model extends CI_Model {
             )
         );
     }
-
 
     //------ Auth ------
     /**
@@ -280,6 +283,78 @@ class Data_model extends CI_Model {
         if(!empty($action) && in_array( $action, Data_model::AUTH_ACTIONS)) return $action;
         // If Fails, return default value
         return Data_model::AUTH_ACTIONS['View'];
+    }
+    //--- Security Utility ---
+    public function GenSalt (int $len = 32): string {
+        $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789`~!@#$%^&*()-=_+';
+        $l = strlen($chars) - 1;
+        $str = '';
+        for ($i = 0; $i < $len; ++$i) {
+            $str .= $chars[rand(0, $l)];
+        }
+        return $str;
+    }
+
+    //------ Validation ------
+    /** Load Centers
+     * @return array Centers Data Query Result
+     */
+    public function TestUserUsername($username) : string|int {
+        $query = $this->db->select('count(*) as hits')->like('username', $username)->get('users');
+        return $query->result_array()[0]['hits'];
+    }
+
+    /** Load Centers
+     * @return array Centers Data Query Result
+     */
+    public function TestUserEmail($email) : string|int {
+        $query = $this->db->select('count(*) as hits')->like('email', $email)->get('users');
+        return $query->result_array()[0]['hits'];
+    }
+
+    #[ArrayShape(['valid' => "bool", 'errorsData' => "array"])]
+    public function ValidateFieldList ($fieldList) : array {
+        $valid = true; $validationErrors = [];
+        foreach ($fieldList as $field) {
+            $validationData = $this->ValidateField($this->input->post($field['id']), $field['type'], $field['name'], $field['max'], $field['required']);
+            if(!$validationData['valid']) {
+                $valid = false;
+                $validationErrors[] = ['id' => $field['id'], 'data' => $validationData['data']];
+            }
+        }
+        return ['valid' => $valid, 'errorsData' => $validationErrors];
+    }
+
+    private function ValidateField($value, string $type, string $name, int $max, bool $required = false) : array {
+        if(empty($value)) return ['valid' => ($required !== true), 'data' => $name.' required.'];
+        if(strlen($value) > $max) return ['valid' => false, 'data' => "{$name} Cannot Exceed {$max} Characters"];
+        return match (strtolower($type)) {
+            'email' => $this->validateEmail($value, $name),
+            'alpha' => $this->validateAlphaSpaces($value, $name),
+            'numeric' => $this->validateNumbersSpaces($value, $name),
+            'alphanumeric' => $this->validateAlphaNumbers($value, $name),
+            default => ['valid' => true],
+        };
+    }
+
+    private function validateNumbersSpaces($value, $name) : array {
+        if(preg_match('/[^0-9 ]/i', $value)) return ['valid' => false, 'data' => "{$name} Must Be Numbers and Spaces only"];
+        return ['valid' => true];
+    }
+
+    private function validateAlphaSpaces($value, $name) : array {
+        if(preg_match('/[^a-zA-Z \n]+/', $value)) return ['valid' => false, 'data' => "{$name} Must Be Letters and Spaces only"];
+        return ['valid' => true];
+    }
+
+    private function validateAlphaNumbers($value, $name) : array {
+        if(preg_match('/[^a-zA-Z0-9 \n]+/', $value)) return ['valid' => false, 'data' => "{$name} Must Be Letters, Numbers, and Spaces only"];
+        return ['valid' => true];
+    }
+
+    private function validateEmail($value, $name) : array {
+        if(!filter_var($value, FILTER_VALIDATE_EMAIL)) return ['valid' => false, 'data' => "{$name} Must Be A Valid Email (Ex: email@domain.com)"];
+        return ['valid' => true];
     }
 
 }

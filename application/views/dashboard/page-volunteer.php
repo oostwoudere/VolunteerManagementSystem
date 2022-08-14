@@ -30,11 +30,21 @@ if(count($volunteer) > 0) : ?>
     <div class="card text-bg-dark border-secondary">
         <h5 class="card-header"><?=$name?></h5>
         <div class="card-body">
-            <p class="card-text"><?=(!empty($vol[$property]) && strlen($vol[$property]) > 1) ? $vol[$property] : "No ${name} Uploaded"?></p>
+            <p class="card-text">
+            <?php if(strcmp($property, 'drivers') == 0 || strcmp($property, 'social') == 0) : ?>
+                <?php if (!empty($vol[$property]) && strlen($vol[$property]) > 1) : ?>
+                <a class="btn btn-link text-decoration-none" href="/uploads/<?=$vol[$property]?>" target="_blank"><?="Click to View ${name}"?></a>
+                <?php else : ?>
+                <?=(!empty($vol[$property]) && strlen($vol[$property]) > 1) ? $vol[$property] : "No ${name} Uploaded"?>
+                <?php endif; ?>
+            <?php else : ?>
+                <?=(!empty($vol[$property]) && strlen($vol[$property]) > 1) ? $vol[$property] : "No ${name} Uploaded"?>
+            <?php endif; ?>
+            </p>
         </div>
     </div>
 <?php endforeach;
-}?>
+} ?>
 
 <body style="height: 100%">
 <!-- body content -->

@@ -1,0 +1,13 @@
+.success {
+    background-color: rgb(81, 182, 23) !important;
+    color:white;
+}
+
+.danger {
+    background-color: rgb(220, 30, 30) !important;
+    color:white;
+}
+
+.templateHolder {
+    background-color: white;
+}

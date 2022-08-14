@@ -1,0 +1,42 @@
+html {
+    height: 100%;
+    background-color: #6C757D;
+}
+
+body {
+    background-color: #6C757D;
+    color: white;
+}
+
+::-webkit-scrollbar { width: 10px; }
+/* Track */
+::-webkit-scrollbar-track { background: #f1f1f1; }
+/* Handle */
+::-webkit-scrollbar-thumb { background: #888; }
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+.login-container {
+    max-width: 30rem;
+}
+
+.border-none {
+    border: none;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.bg-black {
+    background-color: #212529;
+}
+
+.c-pointer:hover {
+    cursor: pointer;
+}
+
+.form-label.required:before {
+    content:"*";
+    color:red;
+}

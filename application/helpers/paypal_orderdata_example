@@ -1,0 +1,73 @@
+array(8) {
+    ["id"]=> string(17) "4J2809136T894484V"
+    ["intent"]=> string(7) "CAPTURE"
+    ["status"]=> string(9) "COMPLETED"
+    ["purchase_units"]=> array(1) {
+        [0]=> array(6) {
+            ["reference_id"]=> string(7) "default"
+            ["amount"]=> array(2) {
+                ["currency_code"]=> string(3) "USD"
+                ["value"]=> string(5) "10.00"
+            }
+            ["payee"]=> array(2) {
+                ["email_address"]=> string(33) "comfyseven4-facilitator@gmail.com"
+                ["merchant_id"]=> string(13) "RVRVEX2GVN7BG"
+            }
+            ["description"]=> string(28) "Rust 2x Vanilla+ VIP Package"
+            ["shipping"]=> array(2) {
+                ["name"]=> array(1) {
+                    ["full_name"]=> string(10) "test buyer"
+                }
+                ["address"]=> array(5) {
+                    ["address_line_1"]=> string(9) "1 Main St"
+                    ["admin_area_2"]=> string(8) "San Jose"
+                    ["admin_area_1"]=> string(2) "CA"
+                    ["postal_code"]=> string(5) "95131"
+                    ["country_code"]=> string(2) "US"
+                }
+            }
+            ["payments"]=> array(1) {
+                ["captures"]=> array(1) {
+                    [0]=> array(7) {
+                        ["id"]=> string(17) "7YL51760GK6414509"
+                        ["status"]=> string(9) "COMPLETED"
+                        ["amount"]=> array(2) {
+                            ["currency_code"]=> string(3) "USD"
+                            ["value"]=> string(5) "10.00"
+                        }
+                        ["final_capture"]=> string(4) "true"
+                        ["seller_protection"]=> array(2) {
+                            ["status"]=> string(8) "ELIGIBLE"
+                            ["dispute_categories"]=> array(2) {
+                                [0]=> string(17) "ITEM_NOT_RECEIVED"
+                                [1]=> string(24) "UNAUTHORIZED_TRANSACTION"
+                            }
+                        }
+                        ["create_time"]=> string(20) "2021-10-31T14:50:53Z"
+                        ["update_time"]=> string(20) "2021-10-31T14:50:53Z"
+                    }
+                }
+            }
+        }
+    }
+    ["payer"]=> array(4) {
+        ["name"]=> array(2) {
+            ["given_name"]=> string(4) "test"
+            ["surname"]=> string(5) "buyer"
+        }
+        ["email_address"]=> string(27) "comfyseven4-buyer@gmail.com"
+        ["payer_id"]=> string(13) "PTQY9HCDACTC6"
+        ["address"]=> array(1) {
+            ["country_code"]=> string(2) "US"
+        }
+    }
+    ["create_time"]=> string(20) "2021-10-31T14:50:45Z"
+    ["update_time"]=> string(20) "2021-10-31T14:50:53Z"
+    ["links"]=> array(1) {
+        [0]=> array(3) {
+            ["href"]=> string(67) "https://api.sandbox.paypal.com/v2/checkout/orders/4J2809136T894484V"
+            ["rel"]=> string(4) "self"
+            ["method"]=> string(3) "GET"
+        }
+    }
+}

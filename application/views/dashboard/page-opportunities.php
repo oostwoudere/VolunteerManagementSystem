@@ -23,7 +23,6 @@ if($opportunities == 0) {
             <div class="card-body">
                 <!-- Title -->
                 <h1 class="card-title mb-4"> Opportunities </h1>
-
                 <!-- Filters Selection -->
                 <div class="row mb-3 g-3">
                     <!-- Example Filter 1 -->

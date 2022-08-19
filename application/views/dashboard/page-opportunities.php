@@ -1,15 +1,16 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <?php $user_role = empty($user_role) ? 0 : $user_role; ?>
-<?php $opportunities = empty($opportunities) ? 0 : $opportunities; ?>
+<?php $filtered_out = $filtered_out ?? false;?>
 
 <?php # Prepare Variables
-if($opportunities == 0) {
+if(empty($opportunities) && !$filtered_out) {
     $query = $this->db->select("opportunities.id, opportunities.name, opportunities.date, centers.name as center, centers.location")
         ->join('centers', 'centers.id = opportunities.center_id', 'left')
         ->get('opportunities');
     $opportunities = $query->result_array();
 }
 ?>
+<?php $centers = $centers ?? false; ?>
 
 <body style="height: 100%">
 <!-- body content -->
@@ -25,30 +26,40 @@ if($opportunities == 0) {
                 <h1 class="card-title mb-4"> Opportunities </h1>
 
                 <!-- Filters Selection -->
-                <div class="row mb-3 g-3">
-                    <!-- Example Filter 1 -->
-                    <label for="exampleFilter" class="col-2 col-form-label"> Example Filter: </label>
-                    <div class="col-4">
-                        <select class="form-control text-bg-dark" id="exampleFilter">
-                            <option value="0" selected>Nothing</option>
-                            <option value="1">Something</option>
-                            <option value="2">Another</option>
-                            <option value="3">Example</option>
-                            <option value="4">Option</option>
-                        </select>
+                <form method="get">
+                    <div class="row mb-3 g-3">
+                        <!-- Center Filter (code copied from add opp page)-->
+                        <label for="centerFilter" class="col-2 col-form-label"> Filter By Center: </label>
+                        <div class="col-4">
+                            <select name="centerFilter" id="centerFilter" class="form-control text-bg-dark">
+                                <?php if($centers !== false && count($centers) > 0) : ?>
+                                    <option value="0" selected> All </option>
+                                    <?php foreach ($centers as $center) : ?>
+                                        <option value="<?=$center['id']?>"><?=$center['name']?> - <?=$center['location']?></option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option> Currently No Centers Available </option>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        <!-- Date Filter -->
+                        <label for="dateFilter" class="col-2 col-form-label"> Filter By Date: </label>
+                        <div class="col-4">
+                            <select class="form-control text-bg-dark" id="dateFilter" name="dateFilter">
+                                <option value="0" selected>All</option>
+                                <option value="1">Most Recent</option>
+                            </select>
+                        </div>
+                        <!-- Search String Filter -->
+                        <label for="searchString" class="col-2 col-form-label"> Filter By Search Term: </label>
+                        <div class="col-4">
+                            <input type="text" name="searchString" id="searchString" class="form-control text-bg-dark" placeholder="Enter A Search Term">
+                            </select>
+                        </div>
+
                     </div>
-                    <!-- Example Filter 2 -->
-                    <label for="anotherFilter" class="col-2 col-form-label"> Another Filter: </label>
-                    <div class="col-4">
-                        <select class="form-control text-bg-dark" id="anotherFilter">
-                            <option value="0" selected>Nothing</option>
-                            <option value="1">Something</option>
-                            <option value="2">Another</option>
-                            <option value="3">Example</option>
-                            <option value="4">Option</option>
-                        </select>
-                    </div>
-                </div>
+                    <input type="submit" class="btn btn-success w-25" value="Filter">
+                </form>
                 <hr/>
 
                 <!-- Volunteers Data -->

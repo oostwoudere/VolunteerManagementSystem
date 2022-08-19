@@ -132,11 +132,31 @@ class Dashboard extends CI_Controller {
     public function opportunities() {
         if (!$this->ion_auth->logged_in()) { $this->redirectReturnHere(); }
         if($this->checkRole([Dashboard::ROLES['Dev'], Dashboard::ROLES['Admin']])) {
-            if(!empty($this->input->post('center'))) {
-                $this->data = $this->input->post('center');
-                $this->data['opportunities'] = $this->data_model->loadOpportunityVolunteerOptions(12);
+
+            if((!empty($this->input->get('centerFilter'))) || (!empty($this->input->get('dateFilter'))) || (!empty($this->input->get('searchString')))) {
+                $center_id = $this->input->get('centerFilter');
+                //If the user selects nothing, makes sure we don't pass a null
+                if (is_null($center_id)) {
+                    $center_id = 0;
+                }
+
+                $date_filter = $this->input->get('dateFilter');
+                //If the user selects nothing, makes sure we don't pass a null
+                if (is_null($date_filter)) {
+                    $date_filter = 0;
+                }
+
+                $string_filter = $this->input->get('searchString');
+                //If the user selects nothing, makes sure we don't pass a null
+                if (is_null($string_filter)) {
+                    $string_filter = '';
+                }
+
+                $this->data['opportunities'] = $this->data_model->filterOpportunities($center_id, $date_filter, $string_filter);
+                $this->data['filtered_out'] = true;
             }
 
+            $this->data['centers'] = $this->data_model->LoadCenters();
             $this->loadView('opportunities');
         } else {
             redirect('/dashboard');

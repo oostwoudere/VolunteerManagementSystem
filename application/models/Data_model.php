@@ -104,6 +104,42 @@ class Data_model extends CI_Model {
         return $q->result_array();
     }
 
+    /** Opportunities that match specified filter criteria
+     * @param int $center_id  ID of Center (or 0 if no center selected)
+     * @param int $date_filter  1 if selected, 0 if not
+     * @param string $search_string input user wishes to search for an appropriate opportunity with
+     * @return array    Result array
+     */
+    public function filterOpportunities (int $center_id,int $date_filter, string $search_string) : array {
+
+        $this->db->select("opportunities.id, opportunities.name, opportunities.date, centers.name as center, centers.location");
+        $this->db->from('opportunities');
+        $this->db->join('centers', 'centers.id = opportunities.center_id', 'left');
+
+        if ($center_id !== 0) {
+            $this->db->where('opportunities.center_id', $center_id);
+        }
+        //if false, default "all" centers selected
+
+        if ($date_filter !== 0) {
+            $currentDate = date("Y-m-d");
+            $oldestDate = date("Y-m-d", strtotime(" -60 days"));
+
+            $this->db->where('opportunities.date <=', $currentDate);
+            $this->db->where('opportunities.date >=', $oldestDate);
+        }
+        //if false, default "all" dates selected
+
+        if (!empty($search_string)) {
+            $this->db->like('opportunities.name', $search_string);
+        }
+        //if empty, search string was left blank
+
+        $query = $this->db->get();
+
+        return $query->result_array();
+    }
+
     //------ Add -------
     /** Add to Table
      *

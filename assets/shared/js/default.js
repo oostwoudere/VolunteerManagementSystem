@@ -177,7 +177,7 @@ let PSA = {
             };
             // Success Action
             let successAction = (info) => {
-                PSA.Helpers.Swal.Reload.success('Opportunity Modification Succeeded');
+                PSA.Helpers.Swal.Redirect.success('Opportunity Modification Succeeded', '/dashboard/opportunities');
             };
 
             // Step 4: Submit Form

@@ -6,7 +6,8 @@
 
 <!-- body content -->
 <div class="container text-center">
-    <h1> Coming Soon  </h1>
+    <h1> Volunteer Management System  </h1>
+    <?php redirect('/register'); ?>
 </div>
 
 </body>

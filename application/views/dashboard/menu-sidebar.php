@@ -9,7 +9,7 @@ $menuItems = [  // The LINK is the most important part, everything else is dynam
     'Opportunities'     => [ 'link' => '/dashboard/opportunities',      'icon' => 'people-group',       'active' => false, 'rendered' => false],
     $a.'Opportunity'    => [ 'link' => '/dashboard/opportunity',        'icon' => 'person-circle-plus', 'active' => false, 'rendered' => false],
     'Audit Log'         => [ 'link' => '/dashboard/audit',              'icon' => 'file-lines',         'active' => false, 'rendered' => false],
-    'Test'              => [ 'link' => '/dashboard/test',               'icon' => 'flask-vial',         'active' => false, 'rendered' => false],
+//    'Test'              => [ 'link' => '/dashboard/test',               'icon' => 'flask-vial',         'active' => false, 'rendered' => false],
 ];
 
 # Set Up the Correct Menu Based on Role/Page

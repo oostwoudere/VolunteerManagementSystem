@@ -42,14 +42,62 @@ class Data_model extends CI_Model {
         return $query->result_array();
     }
 
+    /** Load Volunteers By Search Filter
+     * @param $filter   int|bool    ID of the Filter | False for no filter
+     * @return array Volunteer Data Query Result
+     */
+    public function LoadVolunteers(int|bool $filter = false) : array {
+        if($filter === false) {
+            $query = $this->db->select("users.id, username, CONCAT(first_name, ' ', last_name) as name, email, user_roles.name as role")
+                ->join('user_roles', 'user_roles.id = users.role', 'left')
+                ->where("users.active = 1")
+                ->where('user_roles.name', 'volunteer')
+                ->or_where('user_roles.name', 'pending')
+                ->or_where('user_roles.name', 'disapproved')
+                ->or_where('user_roles.name', 'inactive')
+                ->get('users');
+        } else {
+            // Start Query
+            $this->db->select("users.id, username, CONCAT(first_name, ' ', last_name) as name, email, user_roles.name as role")
+                ->join('user_roles', 'user_roles.id = users.role', 'left')
+                ->where("users.active = 1");
+
+            // Apply Filter
+            switch ($filter) {
+                case 1:
+                    $this->db->where('user_roles.name', 'volunteer')->or_where('user_roles.name', 'pending');
+                    break;
+                case 2:
+                    $this->db->where('user_roles.name', 'volunteer');
+                    break;
+                case 3:
+                    $this->db->where('user_roles.name', 'pending');
+                    break;
+                case 4:
+                    $this->db->where('user_roles.name', 'disapproved');
+                    break;
+                case 5:
+                    $this->db->where('user_roles.name', 'inactive');
+                    break;
+            }
+
+            // Confirm/Complete Filter
+            $query = $this->db->get('users');
+        }
+
+        // Return Query Result
+        return $query->result_array();
+    }
+
     /** Load Volunteer By User ID
      * @param $id   int|bool    ID of the User | False for current User
      * @return array Volunteer Data Query Result
      */
     public function LoadVolunteer(int|bool $id = false) : array {
+        $id = ($id === false) ? $this->ion_auth->get_user_id() : $id;
         $query = $this->db->select('users.*, volunteers_data.*')
                         ->join($this::TABLES['Users'], 'users.id = '.$this::TABLES['Volunteers'].'.user_id')
-                        ->where($this::TABLES['Volunteers'].'.user_id', $id ?? $this->ion_auth->get_user_id())->get($this::TABLES['Volunteers']);
+                        ->where($this::TABLES['Volunteers'].'.user_id', $id)->get($this::TABLES['Volunteers']);
         return $query->result_array()[0];
     }
 
@@ -102,6 +150,41 @@ class Data_model extends CI_Model {
         }
 
         return $q->result_array();
+    }
+
+    /** Opportunities that match specified filter criteria
+     * @param int $center_id  ID of Center (or 0 if no center selected)
+     * @param int $date_filter  1 if selected, 0 if not
+     * @param string $search_string input user wishes to search for an appropriate opportunity with
+     * @return array    Result array
+     */
+    public function filterOpportunities (int $center_id,int $date_filter, string $search_string) : array {
+        $this->db->select("opportunities.id, opportunities.name, opportunities.date, centers.name as center, centers.location");
+        $this->db->from('opportunities');
+        $this->db->join('centers', 'centers.id = opportunities.center_id', 'left');
+
+        if ($center_id !== 0) {
+            $this->db->where('opportunities.center_id', $center_id);
+        }
+        //if false, default "all" centers selected
+
+        if ($date_filter !== 0) {
+            $currentDate = date("Y-m-d");
+            $oldestDate = date("Y-m-d", strtotime(" -60 days"));
+
+            $this->db->where('opportunities.date <=', $currentDate);
+            $this->db->where('opportunities.date >=', $oldestDate);
+        }
+        //if false, default "all" dates selected
+
+        if (!empty($search_string)) {
+            $this->db->like('opportunities.name', $search_string);
+        }
+        //if empty, search string was left blank
+
+        $query = $this->db->get();
+
+        return $query->result_array();
     }
 
     //------ Add -------

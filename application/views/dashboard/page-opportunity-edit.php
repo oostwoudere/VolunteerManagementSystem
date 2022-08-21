@@ -65,7 +65,7 @@ $arrVal = function ($key, $dataSet) { echo array_key_exists($key, $dataSet) ? $d
                         </div>
                         <div class="col-4 px-2">
                             <label for="data" class="form-label required">Time:</label>
-                            <input type="text" name="date" value="<?=$arrVal('date', $opportunity)?>" id="date" class="form-control text-bg-dark" required placeholder="Enter Your Last Name">
+                            <input type="date" name="date" value="<?=$arrVal('date', $opportunity)?>" id="date" class="form-control text-bg-dark" required placeholder="Enter Your Last Name">
                             <div class="invalid-feedback" id="date_validation">
                                 Opportunity Date Required
                             </div>
@@ -127,7 +127,7 @@ $arrVal = function ($key, $dataSet) { echo array_key_exists($key, $dataSet) ? $d
 
                     <!-- Buttons -->
                     <div class="w-100 mt-2 d-flex justify-content-evenly">
-                        <a class="btn btn-outline-secondary w-25" href="<?=base_url('/dashboard/volunteers')?>">Cancel</a>
+                        <a class="btn btn-outline-secondary w-25" href="<?=base_url('/dashboard/opportunities')?>">Cancel</a>
                         <button class="btn btn-success w-25" type="button" id="SubmitEditOpportunity">Submit</button>
                     </div>
                 </form>

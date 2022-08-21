@@ -47,7 +47,7 @@
         <!-- Testing Area -->
         <div class="card text-bg-dark text-light m-2">
             <div class="card-header">
-                <h1> Edit A Volunteer </h1>
+                <h1> Edit A Volunteer <?=$user_id?> </h1>
             </div>
             <div class="card-body">
                 <h2 class="card-title"> Volunteer Data Form, Note there are 3 Parts </h2>

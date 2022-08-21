@@ -1,14 +1,25 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed'); ?>
 <?php $user_role = empty($user_role) ? 0 : $user_role; ?>
 <?php $opportunities = empty($opportunities) ? 0 : $opportunities; ?>
+<?php $volunteerFilter = empty($volunteerFilter) ? false : $volunteerFilter; ?>
+<?php $volunteers = empty($volunteers) ? false : $volunteers; ?>
 
 <?php # Prepare Variables
-$query = $this->db->select("users.id, username, CONCAT(first_name, ' ', last_name) as name, email, user_roles.name as role")
-    ->join('user_roles', 'user_roles.id = users.role', 'left')
-    ->where('user_roles.name', 'volunteer')->or_where('user_roles.name', 'pending')
-    ->where("users.active = 1")
-    ->get('users');
-$volunteers = $query->result_array();
+if($volunteers === false && $volunteerFilter === false) {
+    $query = $this->db->select("users.id, username, CONCAT(first_name, ' ', last_name) as name, email, user_roles.name as role")
+        ->join('user_roles', 'user_roles.id = users.role', 'left')
+        ->where("users.active = 1")
+        ->where('user_roles.name', 'volunteer')
+        ->or_where('user_roles.name', 'pending')
+        ->or_where('user_roles.name', 'disapproved')
+        ->or_where('user_roles.name', 'inactive')
+        ->get('users');
+    $volunteers = $query->result_array();
+}
+?>
+
+<?php # Helpers
+$selFilter = function ($cur, $sel) : void { if($sel !== false && $sel == $cur) echo ' selected'; }
 ?>
 
 <body style="height: 100%">
@@ -25,30 +36,23 @@ $volunteers = $query->result_array();
                 <h1 class="card-title mb-4"> Volunteers </h1>
 
                 <!-- Filters Selection -->
-                <div class="row mb-3 g-3">
+                <form method="get" class="row mb-3 g-3">
+                    <div class="col-2"></div>
                     <!-- Example Filter 1 -->
-                    <label for="exampleFilter" class="col-2 col-form-label"> Example Filter: </label>
+                    <label for="volunteerFilter" class="col-2 col-form-label"> Volunteer Filter: </label>
                     <div class="col-4">
-                        <select class="form-control text-bg-dark" id="exampleFilter">
-                            <option value="0" selected>Nothing</option>
-                            <option value="1">Something</option>
-                            <option value="2">Another</option>
-                            <option value="3">Example</option>
-                            <option value="4">Option</option>
+                        <select class="form-control text-bg-dark" id="volunteerFilter"  name="volunteerFilter">
+                            <option>All</option>
+                            <option value="1"<?=$selFilter(1, $volunteerFilter)?>>Approved/Pending Approval</option>
+                            <option value="2"<?=$selFilter(2, $volunteerFilter)?>>Approved</option>
+                            <option value="3"<?=$selFilter(3, $volunteerFilter)?>>Pending Approval</option>
+                            <option value="4"<?=$selFilter(4, $volunteerFilter)?>>Disapproved</option>
+                            <option value="5"<?=$selFilter(5, $volunteerFilter)?>>Inactive</option>
                         </select>
                     </div>
-                    <!-- Example Filter 2 -->
-                    <label for="anotherFilter" class="col-2 col-form-label"> Another Filter: </label>
-                    <div class="col-4">
-                        <select class="form-control text-bg-dark" id="anotherFilter">
-                            <option value="0" selected>Nothing</option>
-                            <option value="1">Something</option>
-                            <option value="2">Another</option>
-                            <option value="3">Example</option>
-                            <option value="4">Option</option>
-                        </select>
-                    </div>
-                </div>
+
+                    <button type="submit" class="btn btn-success col-2" value="Filter">Submit</button>
+                </form>
                 <hr/>
 
                 <!-- Volunteers Data -->

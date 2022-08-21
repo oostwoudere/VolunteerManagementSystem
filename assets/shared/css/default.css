@@ -40,3 +40,40 @@ body {
     content:"*";
     color:red;
 }
+
+
+
+.dashboardbutton {
+    display: inline-block;
+    border-radius: 15px;
+    background-color: #000080;
+    color: #FFFFFF;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 24px;
+    padding: 20px;
+    height: 250px;
+    width: 320px;
+    margin: 10px;
+}
+.dashboardbutton span {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.dashboardbutton span:after {
+    content: '\00bb';
+    position: static;
+    opacity: 0;
+    top: 0;
+    right: -15px;
+    transition: 0.3s;
+}
+.dashboardbutton:hover span {
+    padding-right: 25px;
+}
+.dashboardbutton:hover span:after {
+    opacity: 1;
+}

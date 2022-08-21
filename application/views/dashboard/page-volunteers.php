@@ -42,7 +42,7 @@ $selFilter = function ($cur, $sel) : void { if($sel !== false && $sel == $cur) e
                     <label for="volunteerFilter" class="col-2 col-form-label"> Volunteer Filter: </label>
                     <div class="col-4">
                         <select class="form-control text-bg-dark" id="volunteerFilter"  name="volunteerFilter">
-                            <option>All</option>
+                            <option value="">All</option>
                             <option value="1"<?=$selFilter(1, $volunteerFilter)?>>Approved/Pending Approval</option>
                             <option value="2"<?=$selFilter(2, $volunteerFilter)?>>Approved</option>
                             <option value="3"<?=$selFilter(3, $volunteerFilter)?>>Pending Approval</option>

@@ -1,6 +1,15 @@
 # VolunteerManagementSystem
 Pre-Semester Assignment
 
+# Tips for the Professor
+## Base Admin Account: 
+n01442977@unf.edu
+D&02LhrE*60I6Oi
+
+## Files
+Application, Assets, System, Uploads, .htaccess, and index.php should be surface level (Ex: htdocs/Applications)
+
+
 Instructions:
 CIS 4327 – IS Senior Project I
 Pre-Semester Team Project Assignment
